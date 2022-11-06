@@ -30,6 +30,8 @@ export default class TaskList extends Component{
               
               <View style={styles.taskList}>
               <Task desc="Comprar um livro" estimateAt={new Date()} doneAt={new Date()}></Task>
+              <Task desc="Comprar um livro" estimateAt={new Date()}></Task>
+
               </View>
               <StatusBar style="auto" />
             </View>
