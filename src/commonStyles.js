@@ -1,5 +1,7 @@
 export default {
     colors:{
-        secondary: '#fff'
+        secondary: '#fff',
+        mainText:'#777',
+        subText:'#bbb',
     }
 }
