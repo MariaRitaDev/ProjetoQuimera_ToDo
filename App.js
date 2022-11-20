@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import TaskList from "./src/screens/TaskList";
+import 'react-native-gesture-handler';
 
 export default function App(){
         return (

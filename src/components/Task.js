@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableWithoutFeedback} from "react-native";
+import { View, Text, StyleSheet, TouchableWithoutFeedback, TouchableOpacity} from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome'
+import Swipeable from "react-native-gesture-handler/Swipeable";
 
 import moment from 'moment'
 import 'moment/locale/pt-br';
@@ -20,8 +21,16 @@ export default props => {
 
     const date = moment(props.estimateAt).format('L')
 
-    return(
+    /*const getRightContent = ()=> {
+        return (
+            <TouchableOpacity style={styles.right}>
+                <Icon name="trash" size={30} color='#FFF'/>
+            </TouchableOpacity>
 
+        )
+}*/
+
+    return(
 
         <View style={styles.container}> 
         <TouchableWithoutFeedback
@@ -30,14 +39,20 @@ export default props => {
                 {getCheckView(props.doneAt)} 
             </View>
             </TouchableWithoutFeedback>
-            <View> 
+            <View style={{ width: "60%" }}> 
                 <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
                 <Text style={[styles.date, doneOrNotStyle]}>{date+ ""}</Text>
             </View>
-
+            <View style={styles.checkContainer}>
+                <TouchableOpacity style={styles.right} onPress={() => props.onDelete(props.id)}>
+                    <Icon name="trash" size={20} color='#f00' />
+                 </TouchableOpacity>
+            </View>
 
 
         </View>
+
+      
     )
        
 
@@ -68,8 +83,9 @@ const styles = StyleSheet.create({
         },
 
         checkContainer: {
-            width: '12%',
+            width: '20%',
             alignItems:'center',
+            padding:10
         },
         pending:{
             height:25,
@@ -96,6 +112,15 @@ const styles = StyleSheet.create({
         },
         date:{
             color: commonStyles.colors.subText,
+        },
+        right:{
+            
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            paddingHorizontal: 20,
+
+            
         }
 
 
