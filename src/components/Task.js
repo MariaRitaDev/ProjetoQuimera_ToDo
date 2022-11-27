@@ -15,18 +15,18 @@ import commonStyles from "../commonStyles";
 
 
 export default props => {
-
     const doneOrNotStyle = props.doneAt != null ?
     { textDecorationLine: 'line-through'}: {}
 
     const date = moment(props.estimateAt).format('L')
 
-    /*const getRightContent = ()=> {
+    /*const getRightContent = () => {
         return (
-            <TouchableOpacity style={styles.right}>
-                <Icon name="trash" size={30} color='#FFF'/>
-            </TouchableOpacity>
-
+            <View>
+                <TouchableOpacity style={styles.right} onPress={() => props.onDelete(props.id)}>
+                    <Icon name="trash" size={30} color='#FFF'/>
+                </TouchableOpacity>
+            </View>
         )
 }*/
 
@@ -43,15 +43,13 @@ export default props => {
                 <Text style={[styles.desc, doneOrNotStyle]}>{props.desc}</Text>
                 <Text style={[styles.date, doneOrNotStyle]}>{date+ ""}</Text>
             </View>
-            <View style={styles.checkContainer}>
+            { <View style={styles.checkContainer}>
                 <TouchableOpacity style={styles.right} onPress={() => props.onDelete(props.id)}>
                     <Icon name="trash" size={20} color='#f00' />
                  </TouchableOpacity>
-            </View>
-
-
+            </View> }
         </View>
-
+        
       
     )
        
