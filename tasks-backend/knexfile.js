@@ -6,7 +6,6 @@
 module.exports = {
 
  
-
     client: 'postgresql',
     connection: {
       database: 'tasks',
@@ -20,5 +19,5 @@ module.exports = {
     migrations: {
       tableName: 'knex_migrations'
     }
+  };
 
-};
