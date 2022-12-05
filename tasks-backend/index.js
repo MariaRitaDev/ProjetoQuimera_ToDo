@@ -3,6 +3,7 @@ const db = require('./config/db');
 const consign = require('consign')
 
 consign() //sempre que ele passar os métodos, o middleware vai passar app como parâmetro
+    .include('./config/passport.js')
     .then('./config/middlewares.js')
     .then('./api')
     .then('./config/routes.js')
