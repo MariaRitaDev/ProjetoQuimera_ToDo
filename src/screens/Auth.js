@@ -7,23 +7,53 @@ import backgroundImage from '../../assets/imgs/login.jpg'
 import commonStyles from '../commonStyles'
 import AuthInput from "../components/AuthInput";
 
+import axios from "axios";
+
+import { server, showError, showSuccess } from "../common";
+
+const initialState = {
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword:'',
+    stageNew: false
+
+}
+
+
 export default class Auth extends Component{ 
 
     state = {
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword:'',
-        stageNew: false
+       ...initialState
     }
     signinOrSignup = () => {
         if(this.state.stageNew){
-            Alert.alert('Sucesso!', 'Criar conta')
+           this.signup()
         }else{
             Alert.alert('Sucesso!', 'Logar')
         }
     }
 
+    signup = async () => {
+        try {
+            await axios.post(`${server}/signup`,{
+            name: this.state.name,
+            email: this.state.email,
+            password: this.state.password,
+            confirmPassword: this.state.confirmPassword
+                
+            })
+
+            showSuccess('Usuário Cadastrado!')
+            this.setState({...initialState})
+        } catch(e){
+            showError(e)
+        }
+    }
+
+    signin = () => {
+        
+    }
 
     render(){
         return(
