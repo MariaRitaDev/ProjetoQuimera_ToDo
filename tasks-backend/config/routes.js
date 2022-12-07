@@ -13,7 +13,7 @@ module.exports = app => {
     
     app.route('/tasks/:id/toggle')
         .all(app.config.passport.authenticate())
-        //.put(app.api.task.toggleTask)
+        .put(app.api.task.toggleTask)
 }
 
 

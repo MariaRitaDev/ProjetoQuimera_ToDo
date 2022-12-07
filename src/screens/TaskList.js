@@ -2,6 +2,9 @@ import React, {Component} from "react";
 import { StatusBar } from 'expo-status-bar';
 import { Alert, StyleSheet, Text, View, ImageBackground, FlatList, TouchableOpacity, Platform} from 'react-native';
 
+import Axios from "axios";
+import {server, showError } from "../common";
+
 
 import { AsyncStorage } from 'react-native';
 import Icon  from "react-native-vector-icons/FontAwesome";
@@ -33,12 +36,29 @@ export default class TaskList extends Component{
 
     componentDidMount = async () => {
       const stateString =  await AsyncStorage.getItem('tasksState')
-      const state= JSON.parse(stateString) || initialState
-      this.setState(state, this.filterTasks)
+      const saveState= JSON.parse(stateString) || initialState
+      this.setState({
+        showDoneTasks: saveState.showDoneTasks
+      }, this.filterTasks)
+      this.loadTasks()
   }
 
+  loadTasks = async () => {
+    try {
+        const maxDate = moment()
+       
+            .add({ days: this.props.daysAhead})
+            .format('YYYY-MM-DD 23:59:59')
+        const res = await Axios.get(`${server}/tasks?date=${maxDate}`)
+        this.setState({ tasks: res.data }, this.filterTasks)
+    } catch(e) {
+        showError(e)
+    }
+}
+
+
     toggleFilter = () => {
-      this.setState({showDoneTasks: !this.state.showDoneTasks},this.filterTasks)
+      this.setState({ showDoneTasks: !this.state.showDoneTasks }, this.filterTasks)
     }
 
     //Filtragem das tarefas
@@ -52,43 +72,66 @@ export default class TaskList extends Component{
       }
 
       this.setState({visibleTasks})
-      AsyncStorage.setItem('tasksState',JSON.stringify(this.state))
+      AsyncStorage.setItem('tasksState',JSON.stringify({
+        showDoneTasks: this.state.showDoneTasks
+
+      }))
     }
 
     //Altera o estado das tarefas
-    toggleTask = taskId => {
-      const tasks =[...this.state.tasks]
-      tasks.forEach(task => {
-        if(task.id === taskId){
-          task.doneAt = task.doneAt ? null : new Date()
-        }
-      })
-
-      this.setState({tasks},this.filterTasks)
-    }
+    toggleTask = async taskId => {
+      try {
+          await Axios.put(`${server}/tasks/${taskId}/toggle`)
+          this.loadTasks()
+      } catch(e) {
+          showError(e)
+      }
+  }
 
 
     //Adiciona nova tarefa
-    addTask = newTask => {
+    addTask = async newTask => {
       if(!newTask.desc || !newTask.desc.trim()){
         Alert.alert('Dados Inválidos', 'Descrição não informada!')
         return
       }
-        const tasks = [...this.state.tasks]
-        tasks.push({
-          id: Math.random(),
-          desc: newTask.desc,
-          estimateAt:newTask.date,
-          doneAt: null
+      try {
+        await Axios.post(`${server}/tasks`, {
+           desc: newTask.desc,
+           estimateAt: newTask.date 
         })
-        this.setState({tasks,showAddTask:false}, this.filterTasks) //atualiza o estado da tela após a tarefa ser adicionada
-    }
-    //Excluir uma task
-    deleteTask = id =>{
-      const tasks = this.state.tasks.filter(task => task.id !== id)
-      this.setState({tasks}, this.filterTasks)
-    }
 
+        this.setState({ showAddTask: false }, this.loadTasks)
+    } catch(e) {
+        showError(e)
+    }
+}
+getImage = () => {
+  switch(this.props.daysAhead) {
+      case 0: return todayImage
+      case 1: return tomorrowImage
+      case 7: return weekImage
+      default: return monthImage
+  }
+}
+
+getColor = () => {
+  switch(this.props.daysAhead) {
+      case 0: return commonStyles.colors.today
+      case 1: return commonStyles.colors.tomorrow
+      case 7: return commonStyles.colors.week
+      default: return commonStyles.colors.month
+  }
+}
+    //Excluir uma task
+    deleteTask = async taskId => {
+      try {
+          await Axios.delete(`${server}/tasks/${taskId}`)
+          this.loadTasks()
+      } catch(e) {
+          showError(e)
+      }
+  }
 
     render(){
       

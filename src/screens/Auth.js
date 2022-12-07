@@ -6,10 +6,12 @@ import {ImageBackground, Text, StyleSheet,View, TextInput, Alert, TouchableOpaci
 import backgroundImage from '../../assets/imgs/login.jpg'
 import commonStyles from '../commonStyles'
 import AuthInput from "../components/AuthInput";
+import  Icon from "react-native-vector-icons/FontAwesome";
 
 import axios from "axios";
 
 import { server, showError, showSuccess } from "../common";
+
 
 const initialState = {
     name: '',
@@ -67,9 +69,20 @@ export default class Auth extends Component{
     }
 
     render(){
+        const validations = [] //Cria uma verificação das entradas do formulário
+        validations.push(this.state.email && this.state.email.includes('@'))
+        validations.push(this.state.password && this.state.password.length >=3)
+
+        if(this.state.stageNew) {
+            validations.push(this.state.name && this.state.name.trim().length >=3)
+            validations.push(this.state.password === this.state.confirmPassword)
+        }
+
+        const validForm = validations.reduce((t,a) => t && a) //Verifica se todos as restrições foram aceitas sem precisar de um for para cada validação
+
         return(
                 <ImageBackground source={backgroundImage} style={styles.background}>
-                    <Text style={styles.title}>Tasks</Text>
+                    <Text style={styles.title}>Tasks <Icon name='check' style={{color:'#0f0', fontSize:50}}/></Text>
                     <View style={styles.formContainer}>
                         <Text style={styles.subtitle}>
                             {this.state.stageNew ? 'Crie sua conta' : 'Informe seus dados'}
@@ -83,8 +96,8 @@ export default class Auth extends Component{
                         {this.state.stageNew &&
                             <AuthInput icon='asterisk' placeholder="Confirmação de Senha" value={this.state.confirmPassword} style={styles.input} secureTextEntry={true} onChangeText={confirmPassword => this.setState({confirmPassword})}/>
                         }
-                        <TouchableOpacity onPress={this.signinOrSignup}>
-                            <View style={styles.button}>
+                        <TouchableOpacity onPress={this.signinOrSignup} disabled={!validForm}>
+                            <View style={[styles.button, validForm ? {} : {backgroundColor: '#AAA'}]}>
                                 <Text style={styles.buttonText}>
                                     {this.state.stageNew ? 'Registrar':'Entrar' }
 
@@ -94,7 +107,7 @@ export default class Auth extends Component{
                     </View>
                     <TouchableOpacity style={{padding:10}} onPress= {
                         () => this.setState({stageNew: !this.state.stageNew})}>
-                        <Text style={styles.buttonText}>
+                        <Text style={styles.textButton}>
                             {this.state.stageNew ? 'Já possui conta?':'Ainda não possui conta?' }
 
                         </Text>
@@ -141,6 +154,11 @@ const styles = StyleSheet.create({
     },
     buttonText:{
         color: '#fff',
+        fontSize: 15
+
+    },
+    textButton:{
+        color: '#ffd301',
         fontSize: 15
 
     },
